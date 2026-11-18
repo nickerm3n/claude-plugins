@@ -1,6 +1,6 @@
 # claude-plugins
 
-Claude Code marketplace (`claude-plugins`) for your repositories.
+Claude Code marketplace (`nickerm3n-plugins`) for your repositories.
 
 | Plugin | What it does |
 | --- | --- |
@@ -14,9 +14,9 @@ Claude Code marketplace (`claude-plugins`) for your repositories.
 ```json
 {
   "extraKnownMarketplaces": {
-    "claude-plugins": { "source": { "source": "github", "repo": "nickerm3n/claude-plugins" } }
+    "nickerm3n-plugins": { "source": { "source": "github", "repo": "nickerm3n/claude-plugins" } }
   },
-  "enabledPlugins": { "railguards@claude-plugins": true }
+  "enabledPlugins": { "railguards@nickerm3n-plugins": true }
 }
 ```
 

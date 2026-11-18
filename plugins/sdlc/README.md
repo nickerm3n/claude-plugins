@@ -38,9 +38,9 @@ The whole team, in the project's `.claude/settings.json`:
 ```json
 {
   "extraKnownMarketplaces": {
-    "claude-plugins": { "source": { "source": "github", "repo": "nickerm3n/claude-plugins" } }
+    "nickerm3n-plugins": { "source": { "source": "github", "repo": "nickerm3n/claude-plugins" } }
   },
-  "enabledPlugins": { "sdlc@claude-plugins": true }
+  "enabledPlugins": { "sdlc@nickerm3n-plugins": true }
 }
 ```
 
