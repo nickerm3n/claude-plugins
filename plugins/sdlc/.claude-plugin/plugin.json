@@ -1,0 +1,9 @@
+{
+  "name": "sdlc",
+  "version": "0.1.0",
+  "description": "AI SDLC pipeline: Jira task -> enrich -> research -> design -> QA plan -> plan -> code -> QA check -> deploy -> QA, each phase in its own context with a deterministic gate, a judge agent and a human where it matters. Stack-agnostic: the project's .sdlc/config.yml holds every command.",
+  "author": {
+    "name": "nickerm3n"
+  },
+  "types": "./types/index.d.ts"
+}

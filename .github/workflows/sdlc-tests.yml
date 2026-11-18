@@ -1,0 +1,27 @@
+name: sdlc plugin tests
+
+on:
+  pull_request:
+    paths: ["plugins/sdlc/**", ".github/workflows/sdlc-*.yml"]
+  push:
+    branches: [main]
+    paths: ["plugins/sdlc/**"]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    container: python:${{ matrix.python }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: "3.9"
+            yaml: stdlib
+          - python: "3.12"
+            yaml: pyyaml
+    steps:
+      - uses: actions/checkout@v4
+      - if: matrix.yaml == 'pyyaml'
+        run: pip install pyyaml
+      - run: git config --global user.email ci@example.com && git config --global user.name ci && git config --global init.defaultBranch main && git config --global --add safe.directory '*'
+      - run: python3 -m unittest discover -s plugins/sdlc/gates/tests -t plugins/sdlc/gates/tests -v

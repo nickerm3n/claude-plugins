@@ -1,0 +1,74 @@
+# .sdlc/config.yml: the only place the sdlc plugin learns about this project's stack.
+# /sdlc:init writes it from this template; every command below was confirmed by the engineer.
+version: 1
+
+project:
+  name: example
+  stack: custom                 # hint only: node-ts | python | go | java | custom
+  base_branch: main
+  artifact_language: en         # language of the artifacts in .sdlc/runs (prompts stay in English)
+
+tracker:
+  type: jira                    # jira | none
+  base_url: https://example.atlassian.net   # credentials: JIRA_EMAIL / JIRA_API_TOKEN in the environment, never here
+  project_key: PROJ
+
+pipelines:
+  feature: [task, enrich, research, design, qa-plan, plan, code, qa-check, deploy, qa]
+  # bugfix: define your own set (any order-preserving subset of the phases above); /sdlc:bugfix runs it
+
+models:
+  writer: sonnet                # phase agents
+  judge: opus                   # judges: a different model class from the writer
+
+commands:                       # `none` skips a command on purpose; an empty value fails the gate that needs it
+  test: "<full test suite, not a subset>"
+  lint: "<linters>"
+  coverage: "<writes reports.coverage>"
+  complexity: "<writes reports.complexity, e.g. lizard --csv src > .sdlc/reports/lizard.csv>"
+  mutation: "<mutation testing, writes reports.mutation>"
+  sast: "<e.g. semgrep scan --config auto --error>"
+  dast: none
+  deploy: none                  # deploy the branch to a test environment
+  e2e: "<runs the scenarios of 05-qa-plan.md>"
+
+reports:                        # read by the CRAP / complexity / mutation checks
+  coverage: null                # lcov.info or Cobertura XML
+  complexity: null              # lizard --csv output
+  mutation: null                # mutation-testing-report-schema JSON (Stryker, PIT report plugin, ...)
+
+thresholds:                     # the video gives no values: the team sets them, null disables the check
+  crap_max: null
+  mutation_score_min: null
+  complexity_max: null
+  plan_max_lines: 300
+  artifact_max_lines: 600
+
+gates:
+  max_retries: 3                # after N failed gates the run stops and asks the engineer
+  forbidden_in_diff: []         # regexes on added lines, e.g. "\\b(it|describe)\\.only\\("
+  skipped_tests_regex: null     # e.g. "(\\d+) skipped" (mocha: "(\\d+) pending"): more skipped tests than the baseline fail the Code gate
+  skipped_tests_baseline: 0     # skipped tests already on the base branch (/sdlc:init counts them)
+  local_ci: false               # true: the Code gate also runs the hard CI (complexity, CRAP, mutation, SAST) locally
+  ci_scope: changed             # changed: complexity and CRAP are judged on functions the branch touched; all: the whole report
+  ci_skip: []                   # CI commands to leave out on purpose, e.g. [mutation] while mutation testing is not set up
+
+judges:                         # judge agent on these transitions, after the deterministic gate
+  research: false
+  design: false
+  plan: false
+  code: true                    # architecture judge against paths.principles
+
+human:
+  design_approval: github-label:design-approved   # or `state`: the engineer approves in the session
+  merge_before_deploy: false    # true: CI deploys the base branch, so Deploy waits for a human to merge the PR
+
+review_policy:
+  core: {human: 1+, depth: full}
+  supporting: {human: author-ok, depth: reduced}
+  generic: {human: skim, depth: minimal}
+
+paths:
+  runs: .sdlc/runs
+  principles: docs/architecture/principles
+  domain_map: .sdlc/domain-map.yml

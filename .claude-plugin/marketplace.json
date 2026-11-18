@@ -1,0 +1,24 @@
+{
+  "name": "claude-plugins",
+  "owner": {
+    "name": "nickerm3n"
+  },
+  "metadata": {
+    "description": "Claude Code plugins shared across your repositories",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "railguards",
+      "description": "Pre-push gate that keeps pull requests small, in scope and safe. Pluggable checks and judgement skills, configured per project.",
+      "version": "1.0.0",
+      "source": "./plugins/railguards"
+    },
+    {
+      "name": "sdlc",
+      "description": "AI SDLC pipeline: Jira task through enrich, research, design, QA plan, plan, code, QA check, deploy and QA, each phase in its own context with a deterministic gate, judge agents and a human on Enrich and Design. Stack-agnostic, configured per project in .sdlc/config.yml.",
+      "version": "0.1.0",
+      "source": "./plugins/sdlc"
+    }
+  ]
+}

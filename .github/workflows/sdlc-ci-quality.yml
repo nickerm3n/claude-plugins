@@ -1,0 +1,65 @@
+# Reusable hard-CI workflow of the sdlc plugin: complexity, CRAP, mutation, coverage, lint, SAST, DAST.
+# Every command and threshold comes from the calling repo's .sdlc/config.yml; this file knows no stack.
+# Call it from a project (see plugins/sdlc/README.md, "Hard CI").
+name: sdlc ci-quality
+
+on:
+  workflow_call:
+    inputs:
+      config:
+        description: Path of the project's sdlc config
+        type: string
+        default: .sdlc/config.yml
+      setup:
+        description: Shell commands that install the project's toolchain and the tools the config calls (npm ci, pip install lizard semgrep, ...)
+        type: string
+        default: ""
+      skip:
+        description: Comma-separated CI commands to skip in this run, e.g. "mutation" on pull requests and full on a schedule
+        type: string
+        default: ""
+      plugin_ref:
+        description: Ref of nickerm3n/claude-plugins to take the gate scripts from
+        type: string
+        default: main
+      runs_on:
+        type: string
+        default: ubuntu-latest
+    secrets:
+      plugin_token:
+        description: Token that can read nickerm3n/claude-plugins, if it is private
+        required: false
+
+jobs:
+  quality:
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: nickerm3n/claude-plugins
+          ref: ${{ inputs.plugin_ref }}
+          path: .sdlc-plugin
+          token: ${{ secrets.plugin_token || github.token }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Project setup
+        if: ${{ inputs.setup != '' }}
+        run: ${{ inputs.setup }}
+      - name: Hard CI gate
+        run: |
+          mkdir -p .sdlc/reports
+          python3 .sdlc-plugin/plugins/sdlc/gates/run_gate.py --config "${{ inputs.config }}" ci --skip "${{ inputs.skip }}"
+      - name: Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdlc-quality-reports
+          path: |
+            .sdlc/reports/
+            coverage/
+            reports/
+          if-no-files-found: ignore

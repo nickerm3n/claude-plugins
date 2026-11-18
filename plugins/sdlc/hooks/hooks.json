@@ -1,0 +1,20 @@
+{
+  "description": "sdlc: when a phase agent or a judge finishes, run the deterministic gate of its phase and send it back with the violations until it passes or hits gates.max_retries",
+  "hooks": {
+    "SubagentStop": [
+      {
+        "matcher": "^sdlc:(researcher|designer|qa-planner|planner|coder|qa-checker|judge-artifact|judge-architecture)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/gates/run_gate.py\" hook",
+            "timeout": 3600
+          }
+        ]
+      }
+    ]
+  },
+  "modules": [
+    "./pane.tsx"
+  ]
+}

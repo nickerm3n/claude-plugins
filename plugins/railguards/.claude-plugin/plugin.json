@@ -1,0 +1,8 @@
+{
+  "name": "railguards",
+  "version": "1.0.0",
+  "description": "Pre-push gate that keeps pull requests small, in scope and safe. Pluggable checks (scripts) and judgement skills, configured per project.",
+  "author": {
+    "name": "nickerm3n"
+  }
+}

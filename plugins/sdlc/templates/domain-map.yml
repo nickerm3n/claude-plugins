@@ -1,0 +1,15 @@
+# .sdlc/domain-map.yml: DDD class of each part of the code. It sets review depth (review_policy in config.yml)
+# and is the source for CODEOWNERS (`domain.py codeowners`). The last matching entry wins.
+#   core        the business advantage: every change reviewed by 1+ engineers, fully
+#   supporting  supports core, not unique: the author may review, reduced depth
+#   generic     what everyone has: skim, design checked + tests
+default: supporting
+
+domains:
+  - name: example-core
+    path: src/core/**
+    type: core
+    owners: ["@your-org/your-team"]
+  - name: example-generic
+    path: [src/ui/**, scripts/**]
+    type: generic
